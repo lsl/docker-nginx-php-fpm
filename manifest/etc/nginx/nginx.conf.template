@@ -1,0 +1,68 @@
+daemon off;
+
+user www-data;
+
+worker_processes 4;
+
+pid /run/nginx.pid;
+
+error_log /dev/stderr;
+
+events {
+  worker_connections 2048;
+  multi_accept on;
+  use epoll;
+}
+
+http {
+  server_tokens off;
+
+  sendfile on;
+
+  tcp_nopush on;
+  tcp_nodelay on;
+
+  keepalive_timeout 15;
+
+  types_hash_max_size 2048;
+
+  client_max_body_size 20M;
+
+  default_type application/octet-stream;
+
+  gzip on;
+  gzip_disable "msie6";
+
+  open_file_cache max=100;
+
+  access_log /dev/stdout;
+
+  include /etc/nginx/mime.types;
+
+  server {
+    listen $SERVER_PORT;
+    listen [::]:$SERVER_PORT;
+
+    server_name $SERVER_NAME $SERVER_ALIAS;
+
+    root $SERVER_ROOT;
+
+    index index.php;
+
+    location / {
+      try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    location ~ \.php$ {
+      try_files $uri /index.php =404;
+      fastcgi_pass unix:/var/run/php-fpm.sock;
+      fastcgi_index index.php;
+      fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+      include fastcgi_params;
+    }
+
+    location ~ /\.ht {
+      deny all;
+    }
+  }
+}
