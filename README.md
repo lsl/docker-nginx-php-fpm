@@ -18,15 +18,15 @@ This project serves to explore what happens when you treat Nginx / PHP-FPM as im
 
 This image runs supervisord in the foreground which in turn runs nginx/php-fpm in the background. Both nginx/php-fpm are configured to log to stdout/stderr which can then picked up by docker logging as you would expect.
 
-## Example standalone usage (available at http://localhost/)
+### Example standalone usage (available at http://localhost/)
 
 `docker run --rm -it -p80:80 lslio/nginx-php-fpm`
 
-## Example usage with volume map and server name change (available at http://example.localhost/)
+### Example usage with volume map and server name change (available at http://example.localhost/)
 
 `docker run --rm -it -v ~/my/src:/var/www -p 80:80 -e SERVER_NAME=example.localhost lslio/nginx-php-fpm`
 
-## Example Dockerfile usage
+### Example Dockerfile usage
 
 ```
 FROM lslio/nginx-php-fpm
@@ -41,7 +41,7 @@ ENV SERVER_ROOT=/var/www
 COPY . /var/www
 ```
 
-## Example Dockerfile usage with a [composer](https://github.com/lsl/docker-composer) build step:
+### Example Dockerfile usage with a [composer](https://github.com/lsl/docker-composer) build step:
 
 ```
 FROM lslio/composer:latest as composer
@@ -67,7 +67,7 @@ RUN apk add --no-cache --update -X 'http://dl-cdn.alpinelinux.org/alpine/edge/te
 COPY --from=composer --chown=www-data:www-data /var/www /var/www
 ```
 
-# Example docker-compose.yml
+### Example docker-compose.yml
 ```
 version: '3.2'
 
@@ -82,7 +82,7 @@ services:
             SERVER_NAME: "example.localhost"
 ```
 
-# Props
+## Props
 - Got a lot of ideas from [boxedcode/alpine-nginx-php-fpm](https://gitlab.com/boxedcode/alpine-nginx-php-fpm).
 - This golang [supervisord port](https://github.com/ochinchina/supervisord) reduces the final image by about half.
-- Projects like (ReactPHP)[https://github.com/reactphp/http] and [PHP-PM](https://github.com/php-pm/php-pm) deserve a mention as they point to where PHP docker infrastructure is going and are part of the reason for my opinions leading to this project.
+- Projects like [ReactPHP](https://github.com/reactphp/http) and [PHP-PM](https://github.com/php-pm/php-pm) deserve a mention as they point to where PHP docker infrastructure is going and are part of the reason for my opinions leading to this project.
