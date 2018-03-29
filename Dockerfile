@@ -48,7 +48,7 @@ RUN apk add --no-cache --update \
 
 # todo - Switch to upstream ochinchina/supervisord once dockerhub is fixed, see: https://github.com/ochinchina/supervisord/issues/81
 # Install a golang port of supervisord
-COPY --from=lslio/supervisord:latest /usr/local/bin/supervisord /usr/local/bin/supervisord
+COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/local/bin/supervisord
 
 # Runtime env vars are envstub'd into config during entrypoint
 ENV SERVER_NAME=localhost
