@@ -136,4 +136,3 @@ services:
 ## Props
 - Got a lot of ideas from [boxedcode/alpine-nginx-php-fpm](https://gitlab.com/boxedcode/alpine-nginx-php-fpm).
 - This golang [supervisord port](https://github.com/ochinchina/supervisord) reduces the final image by about half.
-- Projects like [ReactPHP](https://github.com/reactphp/http) and [PHP-PM](https://github.com/php-pm/php-pm) deserve a mention as they point to where PHP docker infrastructure is going and are part of the reason for my opinions leading to this project.
