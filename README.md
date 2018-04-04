@@ -8,13 +8,13 @@ This project is a work in progress and a place to test different ways of running
 
 *Please note: This image is effectively unstable and likely to have breaking changes for the forseeable future. I suggest using it as a starting point for your own needs.*
 
-## Why
+## Why would you do this?
 
-Nginx + PHP-FPM as a single image vs Nginx + PHP-FPM as separate images has always come down to one thing: Where you draw the application boundaries.
+Nginx + PHP-FPM as a single image vs separate images has always been hotly debated. While keeping them separate is standard practice: it has downsides without many upsides weighing in.
 
-This project serves to explore what happens when you treat Nginx / PHP-FPM as implementation details, and your application source code as the thing that needs containerization.
+This project serves to explore what happens when you treat Nginx + PHP-FPM as a single application and focus on containerization of your code - the thing that really matters.
 
-## How
+## How does it work?
 
 This image runs supervisord in the foreground which in turn runs nginx/php-fpm in the background. Both nginx/php-fpm are configured to log to stdout/stderr which can then picked up by docker logging as you would expect.
 
@@ -61,8 +61,8 @@ ENV SERVER_PORT=80
 # Note: Laravel users will want to use ENV SERVER_ROOT=/var/www/public
 ENV SERVER_ROOT=/var/www
 
-# Install extra modules
-RUN apk add --no-cache --update -X 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' php7-msgpack php7-gearman
+# Install extra modules (if you need them)
+# RUN apk add --no-cache --update -X 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' php7-msgpack php7-gearman
 
 COPY --from=composer --chown=www-data:www-data /var/www /var/www
 ```
@@ -80,6 +80,57 @@ services:
             - "80:80"
         environment:
             SERVER_NAME: "example.localhost"
+```
+
+### Example docker-compose.yml + bare minimum Dockerfile
+```
+# ./docker-compose.yml
+
+version: '3.2'
+
+services:
+    example:
+        image: lslio/nginx-php-fpm
+        build: ./web
+        volumes:
+            - ./web:/var/www
+        ports:
+            - "80:80"
+        environment:
+            SERVER_NAME: "example.localhost"
+
+# ./web/Dockerfile
+FROM lslio/nginx-php-fpm
+
+```
+
+### Example docker-compose.yml for Multiple Laravel installs behind nginx-proxy
+```
+version: '3.6'
+
+services:
+    nginx-proxy:
+        image: jwilder/nginx-proxy
+        ports:
+            - "80:80"
+        volumes:
+          - /var/run/docker.sock:/tmp/docker.sock:ro
+
+    example-web:
+        image: lslio/nginx-php-fpm
+        volumes:
+            - ./web:/var/www
+        environment:
+            VIRTUAL_HOST: "example.localhost"
+            SERVER_ROOT: "/var/www/public"
+
+    example-api:
+        image: lslio/nginx-php-fpm
+        volumes:
+            - ./api:/var/www
+        environment:
+            VIRTUAL_HOST: "api.example.localhost"
+            SERVER_ROOT: "/var/www/public"
 ```
 
 ## Props
