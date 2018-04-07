@@ -46,7 +46,6 @@ RUN apk add --no-cache --update \
     nginx && \
     rm -rf /var/www/localhost
 
-# todo - Switch to upstream ochinchina/supervisord once dockerhub is fixed, see: https://github.com/ochinchina/supervisord/issues/81
 # Install a golang port of supervisord
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
 

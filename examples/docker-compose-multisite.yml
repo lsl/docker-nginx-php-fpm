@@ -1,0 +1,25 @@
+version: '3.6'
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  example-web:
+    image: lslio/nginx-php-fpm
+    volumes:
+      - ./web:/var/www
+    environment:
+      VIRTUAL_HOST: "example.localhost"
+      SERVER_ROOT: "/var/www/public"
+
+  example-api:
+    image: lslio/nginx-php-fpm
+    volumes:
+      - ./api:/var/www
+    environment:
+      VIRTUAL_HOST: "api.example.localhost"
+      SERVER_ROOT: "/var/www/public"

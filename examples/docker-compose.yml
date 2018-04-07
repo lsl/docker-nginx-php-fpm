@@ -1,0 +1,11 @@
+version: '3.6'
+
+services:
+  example:
+    image: lslio/nginx-php-fpm
+    volumes:
+      - .:/var/www
+    ports:
+      - "80:80"
+    environment:
+      SERVER_NAME: "example.localhost"

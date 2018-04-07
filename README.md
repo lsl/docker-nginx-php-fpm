@@ -26,22 +26,21 @@ This image runs supervisord in the foreground which in turn runs nginx/php-fpm i
 
 `docker run --rm -it -v ~/my/src:/var/www -p 80:80 -e SERVER_NAME=example.localhost lslio/nginx-php-fpm`
 
-### Example Dockerfile usage
+### Example [Dockerfile](https://github.com/lsl/docker-nginx-php-fpm/blob/master/examples/Dockerfile.basic) usage
 
 ```
 FROM lslio/nginx-php-fpm
 
 ENV SERVER_NAME=example.com
-ENV SERVER_ALIAS="www.example.com api.example.com"
-ENV SERVER_PORT=80
-
-# Note: Laravel users will want to use ENV SERVER_ROOT=/var/www/public
+ENV SERVER_ALIAS=www.example.com
 ENV SERVER_ROOT=/var/www
 
 COPY . /var/www
 ```
 
-### Example Dockerfile usage with a [composer](https://github.com/lsl/docker-composer) build step:
+### Example [Dockerfile](https://github.com/lsl/docker-nginx-php-fpm/blob/master/examples/Dockerfile.composer) usage with a [composer](https://github.com/lsl/docker-composer) build step
+
+(Use [lslio/composer](https://github.com/lsl/docker-composer) for faster builds.)
 
 ```
 FROM lslio/composer:latest as composer
@@ -50,15 +49,12 @@ COPY ./composer.* /var/www/
 RUN composer-install -d /var/www
 
 COPY . /var/www
-RUN composer-dump -d /var/www
+RUN composer-dump-autoload -d /var/www
 
 FROM lslio/nginx-php-fpm
 
 ENV SERVER_NAME=example.com
-ENV SERVER_ALIAS="www.example.com api.example.com"
-ENV SERVER_PORT=80
-
-# Note: Laravel users will want to use ENV SERVER_ROOT=/var/www/public
+ENV SERVER_ALIAS=www.example.com
 ENV SERVER_ROOT=/var/www
 
 # Install extra modules (if you need them)
@@ -67,70 +63,48 @@ ENV SERVER_ROOT=/var/www
 COPY --from=composer --chown=www-data:www-data /var/www /var/www
 ```
 
-### Example docker-compose.yml
-```
-version: '3.2'
-
-services:
-    example:
-        image: lslio/nginx-php-fpm
-        volumes:
-            - .:/var/www
-        ports:
-            - "80:80"
-        environment:
-            SERVER_NAME: "example.localhost"
-```
-
-### Example docker-compose.yml + bare minimum Dockerfile
-```
-# ./docker-compose.yml
-
-version: '3.2'
-
-services:
-    example:
-        image: lslio/nginx-php-fpm
-        build: ./web
-        volumes:
-            - ./web:/var/www
-        ports:
-            - "80:80"
-        environment:
-            SERVER_NAME: "example.localhost"
-
-# ./web/Dockerfile
-FROM lslio/nginx-php-fpm
-
-```
-
-### Example docker-compose.yml for Multiple Laravel installs behind nginx-proxy
+### Example [docker-compose.yml](https://github.com/lsl/docker-nginx-php-fpm/blob/master/examples/docker-compose.yml)
 ```
 version: '3.6'
 
 services:
-    nginx-proxy:
-        image: jwilder/nginx-proxy
-        ports:
-            - "80:80"
-        volumes:
-          - /var/run/docker.sock:/tmp/docker.sock:ro
+  example:
+    image: lslio/nginx-php-fpm
+    volumes:
+      - .:/var/www
+    ports:
+      - "80:80"
+    environment:
+      SERVER_NAME: "example.localhost"
+```
 
-    example-web:
-        image: lslio/nginx-php-fpm
-        volumes:
-            - ./web:/var/www
-        environment:
-            VIRTUAL_HOST: "example.localhost"
-            SERVER_ROOT: "/var/www/public"
+### Example [docker-compose.yml](https://github.com/lsl/docker-nginx-php-fpm/blob/master/examples/docker-compose.yml) for Multiple Laravel installs behind nginx-proxy
+```
+version: '3.6'
 
-    example-api:
-        image: lslio/nginx-php-fpm
-        volumes:
-            - ./api:/var/www
-        environment:
-            VIRTUAL_HOST: "api.example.localhost"
-            SERVER_ROOT: "/var/www/public"
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  example-web:
+    image: lslio/nginx-php-fpm
+    volumes:
+      - ./web:/var/www
+    environment:
+      VIRTUAL_HOST: "example.localhost"
+      SERVER_ROOT: "/var/www/public"
+
+  example-api:
+    image: lslio/nginx-php-fpm
+    volumes:
+      - ./api:/var/www
+    environment:
+      VIRTUAL_HOST: "api.example.localhost"
+      SERVER_ROOT: "/var/www/public"
 ```
 
 ## Props
