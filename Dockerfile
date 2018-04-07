@@ -51,9 +51,8 @@ RUN apk add --no-cache --update \
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
 
 # Runtime env vars are envstub'd into config during entrypoint
-ENV SERVER_NAME=localhost
-ENV SERVER_ALIAS=''
-ENV SERVER_PORT=80
+ENV SERVER_NAME="localhost"
+ENV SERVER_ALIAS=""
 ENV SERVER_ROOT=/var/www
 # Alias defaults to empty, example usage:
 # SERVER_ALIAS='www.example.com api.example.com'
