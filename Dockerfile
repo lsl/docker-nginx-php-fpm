@@ -1,8 +1,6 @@
 FROM alpine:3.7
 
-# Set user
-# Note: implicitly creates: /var/www, www-data group @ gid 1000
-# Previously using -G wheel (this might get reverted)
+# Setup user & /var/www dir
 RUN adduser -D -u 1000 -g 1000 -s /bin/sh -h /var/www www-data
 
 # PHP/FPM + Modules
@@ -39,12 +37,18 @@ RUN apk add --no-cache --update \
     php7-zmq
 
 # tini - 'cause zombies - see: https://github.com/ochinchina/supervisord/issues/60
-# gettext - nginx env substitution
+# gettext - nginx envsubst
 RUN apk add --no-cache --update \
     tini \
     gettext \
     nginx && \
     rm -rf /var/www/localhost
+
+# Fix nginx dirs/perms
+RUN mkdir -p /var/cache/nginx && \
+    chown -R www-data:www-data /var/cache/nginx && \
+    chown -R www-data:www-data /var/lib/nginx && \
+    chown -R www-data:www-data /var/tmp/nginx
 
 # Install a golang port of supervisord
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
@@ -54,9 +58,9 @@ ENV SERVER_NAME="localhost"
 ENV SERVER_ALIAS=""
 ENV SERVER_ROOT=/var/www
 # Alias defaults to empty, example usage:
-# SERVER_ALIAS='www.example.com api.example.com'
+# SERVER_ALIAS='www.example.com'
 
-COPY /manifest /
+COPY manifest /
 
 WORKDIR /var/www
 
