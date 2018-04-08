@@ -8,11 +8,11 @@ RUN composer-dump-autoload -d /var/www
 
 FROM lslio/nginx-php-fpm
 
+# Install extra modules (if you need them)
+# RUN apk add --no-cache --update -X 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' php7-msgpack php7-gearman
+
 ENV SERVER_NAME=example.com
 ENV SERVER_ALIAS=www.example.com
 ENV SERVER_ROOT=/var/www
-
-# Install extra modules (if you need them)
-# RUN apk add --no-cache --update -X 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' php7-msgpack php7-gearman
 
 COPY --from=composer --chown=www-data:www-data /var/www /var/www
