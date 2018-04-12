@@ -20,11 +20,11 @@ This image runs supervisord in the foreground which in turn runs nginx/php-fpm i
 
 ### Example standalone usage (available at http://localhost/)
 
-`docker run --rm -it -p80:80 lslio/nginx-php-fpm`
+`docker run --rm -it -p80:80 -v ~/www:/www lslio/nginx-php-fpm`
 
 ### Example usage with volume map and server name change (available at http://example.localhost/)
 
-`docker run --rm -it -v ~/my/src:/var/www -p 80:80 -e SERVER_NAME=example.localhost lslio/nginx-php-fpm`
+`docker run --rm -it -v ~/www:/www -p 80:80 -e SERVER_NAME=example.localhost lslio/nginx-php-fpm`
 
 ### Example [Dockerfile](https://github.com/lsl/docker-nginx-php-fpm/blob/master/examples/Dockerfile.basic) usage
 
@@ -33,37 +33,13 @@ FROM lslio/nginx-php-fpm
 
 ENV SERVER_NAME=example.com
 ENV SERVER_ALIAS=www.example.com
-ENV SERVER_ROOT=/var/www
+ENV SERVER_ROOT=/www
 
-COPY . /var/www
-```
-
-### Example [Dockerfile](https://github.com/lsl/docker-nginx-php-fpm/blob/master/examples/Dockerfile.composer) usage with a [composer](https://github.com/lsl/docker-composer) build step
-
-(Use [lslio/composer](https://github.com/lsl/docker-composer) for faster builds.)
-
-```
-FROM lslio/composer:latest as composer
-
-COPY ./composer.* /var/www/
-RUN composer-install -d /var/www
-
-COPY . /var/www
-RUN composer-dump-autoload -d /var/www
-
-FROM lslio/nginx-php-fpm
-
-# Install extra modules (if you need them)
-# RUN apk add --no-cache --update -X 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' php7-msgpack php7-gearman
-
-ENV SERVER_NAME=example.com
-ENV SERVER_ALIAS=www.example.com
-ENV SERVER_ROOT=/var/www
-
-COPY --from=composer --chown=www-data:www-data /var/www /var/www
+COPY . /www
 ```
 
 ### Example [docker-compose.yml](https://github.com/lsl/docker-nginx-php-fpm/blob/master/examples/docker-compose.yml)
+
 ```
 version: '3.6'
 
@@ -71,7 +47,7 @@ services:
   example:
     image: lslio/nginx-php-fpm
     volumes:
-      - .:/var/www
+      - .:/www
     ports:
       - "80:80"
     environment:
@@ -93,18 +69,18 @@ services:
   example-web:
     image: lslio/nginx-php-fpm
     volumes:
-      - ./web:/var/www
+      - ./web:/www
     environment:
       VIRTUAL_HOST: "example.localhost"
-      SERVER_ROOT: "/var/www/public"
+      SERVER_ROOT: "/www/public"
 
   example-api:
     image: lslio/nginx-php-fpm
     volumes:
-      - ./api:/var/www
+      - ./api:/www
     environment:
       VIRTUAL_HOST: "api.example.localhost"
-      SERVER_ROOT: "/var/www/public"
+      SERVER_ROOT: "/www/public"
 ```
 
 ## Props

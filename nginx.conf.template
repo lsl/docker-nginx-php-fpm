@@ -1,12 +1,11 @@
-daemon off;
+
+pid /run/nginx.pid;
 
 user www-data;
 
 worker_processes auto;
 
-pid /run/nginx.pid;
-
-error_log /dev/stderr;
+error_log /dev/stderr info;
 
 events {
   worker_connections 2048;
@@ -35,7 +34,9 @@ http {
 
   open_file_cache max=100;
 
-  access_log /dev/stdout;
+  log_format docker '$remote_addr $remote_user $status "$request" "$http_referer" "$http_user_agent" ';
+
+  access_log /dev/stdout docker;
 
   include /etc/nginx/mime.types;
 
@@ -63,6 +64,11 @@ http {
 
     location ~ /\.ht {
       deny all;
+    }
+
+    location ~ ^/favicon {
+      log_not_found on;
+      access_log off;
     }
   }
 }

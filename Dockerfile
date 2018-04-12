@@ -1,9 +1,28 @@
 FROM alpine:3.7
 
-# Setup user & /var/www dir
-RUN adduser -D -u 1000 -g 1000 -s /bin/sh -h /var/www www-data
+# Create user
+RUN adduser -D -u 1000 -g 1000 -s /bin/sh www-data && \
+    mkdir -p /www && \
+    chown -R www-data:www-data /www
 
-# PHP/FPM + Modules
+# Install tini - 'cause zombies - see: https://github.com/ochinchina/supervisord/issues/60
+# (also pkill hack)
+RUN apk add --no-cache --update tini
+
+# Install a golang port of supervisord
+COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
+
+# Install nginx & gettext (envsubst)
+# Create cachedir and fix permissions
+RUN apk add --no-cache --update \
+    gettext \
+    nginx && \
+    mkdir -p /var/cache/nginx && \
+    chown -R www-data:www-data /var/cache/nginx && \
+    chown -R www-data:www-data /var/lib/nginx && \
+    chown -R www-data:www-data /var/tmp/nginx
+
+# Install PHP/FPM + Modules
 RUN apk add --no-cache --update \
     php7 \
     php7-apcu \
@@ -36,36 +55,20 @@ RUN apk add --no-cache --update \
     php7-zlib \
     php7-zmq
 
-# tini - 'cause zombies - see: https://github.com/ochinchina/supervisord/issues/60
-# gettext - nginx envsubst
-RUN apk add --no-cache --update \
-    tini \
-    gettext \
-    nginx && \
-    rm -rf /var/www/localhost
-
-# Fix nginx dirs/perms
-RUN mkdir -p /var/cache/nginx && \
-    chown -R www-data:www-data /var/cache/nginx && \
-    chown -R www-data:www-data /var/lib/nginx && \
-    chown -R www-data:www-data /var/tmp/nginx
-
-# Install a golang port of supervisord
-COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
-
 # Runtime env vars are envstub'd into config during entrypoint
 ENV SERVER_NAME="localhost"
 ENV SERVER_ALIAS=""
-ENV SERVER_ROOT=/var/www
+ENV SERVER_ROOT=/www
+
 # Alias defaults to empty, example usage:
 # SERVER_ALIAS='www.example.com'
 
-COPY manifest /
+COPY ./supervisord.conf /supervisord.conf
+COPY ./php-fpm-www.conf /etc/php7/php-fpm.d/www.conf
+COPY ./nginx.conf.template /nginx.conf.template
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 
-WORKDIR /var/www
-
-# nginx: 80, xdebug: 9000 (currently disabled)
-EXPOSE 80 9000
-
-ENTRYPOINT ["tini", "--"]
-CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+# Nginx on :80
+EXPOSE 80
+WORKDIR /www
+ENTRYPOINT ["tini", "--", "/docker-entrypoint.sh"]

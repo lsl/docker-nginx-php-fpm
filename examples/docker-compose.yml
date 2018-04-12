@@ -1,11 +1,18 @@
 version: '3.6'
 
 services:
-  example:
+  builder:
     image: lslio/nginx-php-fpm
+    build: ../
+    entrypoint: /bin/true
+
+  example:
+    image: lslio/nginx-php-fpm-example
+    build: ./
     volumes:
-      - .:/var/www
+      - .:/www
     ports:
       - "80:80"
     environment:
       SERVER_NAME: "example.localhost"
+

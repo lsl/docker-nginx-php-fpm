@@ -1,3 +1,5 @@
+# Example running multiple laravel applications
+# behind nginx-proxy for development
 version: '3.6'
 
 services:
@@ -11,15 +13,15 @@ services:
   example-web:
     image: lslio/nginx-php-fpm
     volumes:
-      - ./web:/var/www
+      - ./web:/www
     environment:
       VIRTUAL_HOST: "example.localhost"
-      SERVER_ROOT: "/var/www/public"
+      SERVER_ROOT: "/www/public"
 
   example-api:
     image: lslio/nginx-php-fpm
     volumes:
-      - ./api:/var/www
+      - ./api:/www
     environment:
       VIRTUAL_HOST: "api.example.localhost"
-      SERVER_ROOT: "/var/www/public"
+      SERVER_ROOT: "/www/public"
