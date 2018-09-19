@@ -28,6 +28,7 @@ RUN apk add --no-cache --update \
     php7-apcu \
     php7-bcmath \
     php7-bz2 \
+    php7-cgi \
     php7-ctype \
     php7-curl \
     php7-dom \
