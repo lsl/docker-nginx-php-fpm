@@ -3,7 +3,10 @@ version: '3.6'
 services:
   builder:
     image: lslio/nginx-php-fpm
-    build: ../
+    build: 
+      context: ../
+      args:
+        VERSION_ALPINE: 3.13.7
     entrypoint: /bin/true
 
   example:
