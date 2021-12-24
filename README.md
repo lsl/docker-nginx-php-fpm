@@ -52,7 +52,7 @@ services:
       SERVER_NAME: "example.localhost"
 ```
 
-### Example [docker-compose.yml](https://github.com/lsl/docker-nginx-php-fpm/blob/master/examples/docker-compose.yml) for Multiple Laravel installs behind nginx-proxy
+### Example [docker-compose.yml](https://github.com/lsl/docker-nginx-php-fpm/blob/master/examples/docker-compose-multisite.yml) for Multiple Laravel installs behind nginx-proxy
 ```
 version: '3.6'
 
