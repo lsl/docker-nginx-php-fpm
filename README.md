@@ -1,4 +1,4 @@
-# [Alpine + Nginx + PHP-FPM7](https://github.com/lsl/docker-nginx-php-fpm)
+# [Alpine + Nginx + PHP-FPM8](https://github.com/lsl/docker-nginx-php-fpm)
 
 What could go wrong?
 
