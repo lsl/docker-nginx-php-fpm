@@ -3,7 +3,7 @@
 FPM_PROCESS_MEMORY_MB=60
 RESERVE_INSTANCE_MEMORY=100
 
-FPM_POOL_FILE=/etc/php7/php-fpm.d/www.conf
+FPM_POOL_FILE=/etc/php8/php-fpm.d/www.conf
 
 MEM_KB=`grep MemTotal /proc/meminfo | awk '{print $2}'`
 MEM_FOR_FPM_MB=$(($MEM_KB/1024-$RESERVE_INSTANCE_MEMORY)1

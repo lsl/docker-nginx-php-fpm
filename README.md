@@ -20,7 +20,7 @@ This image runs supervisord in the foreground which in turn runs nginx/php-fpm i
 
 ### Example standalone usage (available at http://localhost/)
 
-`docker run --rm -it -p80:80 -v ~/www:/www lslio/nginx-php-fpm`
+`docker run --rm -it -p 80:80 -v ~/www:/www lslio/nginx-php-fpm`
 
 ### Example usage with volume map and server name change (available at http://example.localhost/)
 

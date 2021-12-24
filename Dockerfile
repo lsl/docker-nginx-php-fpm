@@ -1,10 +1,10 @@
-ARG VERSION_ALPINE=3.7
+ARG VERSION_ALPINE=3.15
 FROM alpine:${VERSION_ALPINE}
 
 # Create user
-RUN adduser -D -u 1000 -g 1000 -s /bin/sh www-data && \
+RUN adduser -D -u 1000 -g 1000 -s /bin/sh www && \
     mkdir -p /www && \
-    chown -R www-data:www-data /www
+    chown -R www:www /www
 
 # Install tini - 'cause zombies - see: https://github.com/ochinchina/supervisord/issues/60
 # (also pkill hack)
@@ -18,44 +18,43 @@ COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/su
 RUN apk add --no-cache --update \
     gettext \
     nginx && \
-    mkdir -p /var/cache/nginx /var/tmp/nginx && \
-    chown -R www-data:www-data /var/cache/nginx && \
-    chown -R www-data:www-data /var/lib/nginx && \
-    chown -R www-data:www-data /var/tmp/nginx
+    mkdir -p /var/cache/nginx && \
+    chown -R www:www /var/cache/nginx && \
+    chown -R www:www /var/lib/nginx
 
 # Install PHP/FPM + Modules
 RUN apk add --no-cache --update \
-    php7 \
-    php7-apcu \
-    php7-bcmath \
-    php7-bz2 \
-    php7-cgi \
-    php7-ctype \
-    php7-curl \
-    php7-dom \
-    php7-fpm \
-    php7-ftp \
-    php7-gd \
-    php7-iconv \
-    php7-json \
-    php7-mbstring \
-    php7-oauth \
-    php7-opcache \
-    php7-openssl \
-    php7-pcntl \
-    php7-pdo \
-    php7-pdo_mysql \
-    php7-phar \
-    php7-redis \
-    php7-session \
-    php7-simplexml \
-    php7-tokenizer \
-    php7-xdebug \
-    php7-xml \
-    php7-xmlwriter \
-    php7-zip \
-    php7-zlib \
-    php7-zmq
+    php8 \
+    php8-apcu \
+    php8-bcmath \
+    php8-bz2 \
+    php8-cgi \
+    php8-ctype \
+    php8-curl \
+    php8-dom \
+    php8-fpm \
+    php8-ftp \
+    php8-gd \
+    php8-iconv \
+    php8-json \
+    php8-mbstring \
+    php8-pecl-oauth \
+    php8-opcache \
+    php8-openssl \
+    php8-pcntl \
+    php8-pecl-msgpack \
+    php8-pdo \
+    php8-pdo_mysql \
+    php8-phar \
+    php8-redis \
+    php8-session \
+    php8-simplexml \
+    php8-tokenizer \
+    php8-xdebug \
+    php8-xml \
+    php8-xmlwriter \
+    php8-zip \
+    php8-zlib
 
 # Runtime env vars are envstub'd into config during entrypoint
 ENV SERVER_NAME="localhost"
@@ -66,7 +65,7 @@ ENV SERVER_ROOT=/www
 # SERVER_ALIAS='www.example.com'
 
 COPY ./supervisord.conf /supervisord.conf
-COPY ./php-fpm-www.conf /etc/php7/php-fpm.d/www.conf
+COPY ./php-fpm-www.conf /etc/php8/php-fpm.d/www.conf
 COPY ./nginx.conf.template /nginx.conf.template
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 
