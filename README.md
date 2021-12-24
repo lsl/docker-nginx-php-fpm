@@ -4,19 +4,17 @@ What could go wrong?
 
 This image aims to simplify building and deploying PHP web applications with a single container you can throw behind [traefik](https://traefik.io/) or [nginx-proxy](https://github.com/jwilder/nginx-proxy).
 
-This project is a work in progress and a place to test different ways of running nginx + php-fpm in the same container.
-
-*Please note: This image is effectively unstable and likely to have breaking changes for the forseeable future. I suggest using it as a starting point for your own needs.*
-
-## Why would you do this?
-
-Nginx + PHP-FPM as a single image vs separate images has always been hotly debated. While keeping them separate is standard practice: it has downsides without many upsides weighing in.
-
-This project serves to explore what happens when you treat Nginx + PHP-FPM as a single application and focus on containerization of your code - the thing that really matters.
+**⚠️ Please note: This project is no longer maintained, I suggest using this repo as a starting place for your own container.**
 
 ## How does it work?
 
-This image runs supervisord in the foreground which in turn runs nginx/php-fpm in the background. Both nginx/php-fpm are configured to log to stdout/stderr which can then picked up by docker logging as you would expect.
+The image runs a Go based [supervisord port](https://github.com/ochinchina/supervisord/) in the foreground which in turn runs nginx/php-fpm in the background. Both nginx & php-fpm are configured to log to stdout/stderr which can then picked up by docker logging as you would expect.
+
+## Why would you do this?
+
+Nginx + PHP-FPM as a single image vs separate images is a bit contentious. While keeping them separate is standard practice: it has a few downsides and not many upsides for most use cases.
+
+This project serves to explore what happens when you treat Nginx + PHP-FPM as a single application and focus on containerization of your code - the thing that really matters.
 
 ### Example standalone usage (available at http://localhost/)
 
