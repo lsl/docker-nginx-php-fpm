@@ -53,6 +53,7 @@ RUN apk add --no-cache --update \
     php8-xdebug \
     php8-xml \
     php8-xmlwriter \
+    php8php8php8-xmlreader \
     php8-zip \
     php8-zlib
 
